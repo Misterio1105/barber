@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="intro">
+<section class="intro profile-intro">
     <h2>Личный кабинет</h2>
     <p>Пользователь: <strong>{{ request.user.username }}</strong></p>
     <p>Телефон: {{ request.user.phone }}</p>
     <p>Email: {{ request.user.email|default:"не указан" }}</p>
-    <a href="{% url 'pages:booking' %}" class="btn btn-primary">Новая запись</a>
+    <div class="btn-row profile-actions">
+        <a href="{% url 'pages:booking' %}" class="btn btn-primary">Новая запись</a>
+    </div>
 </section>
 
-<section>
+<section class="profile-section">
     <h3>Мои записи</h3>
     {% if appointments %}
         <div class="table-wrap">

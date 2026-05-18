@@ -15,11 +15,13 @@
                 <a href="{% url 'pages:home' %}">Главная</a>
                 <a href="{% url 'pages:services' %}">Услуги</a>
                 <a href="{% url 'pages:masters' %}">Мастера</a>
-                <a href="{% url 'pages:reviews' %}">Отзывы</a>
                 <a href="{% url 'pages:contacts' %}">Контакты</a>
                 {% if user.is_authenticated %}
                     <a href="{% url 'pages:profile' %}">Кабинет</a>
                     <a href="{% url 'pages:booking' %}" class="nav-booking">Запись</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'pages:admin_dashboard' %}" class="nav-admin">Админка</a>
+                    {% endif %}
                     <a href="{% url 'pages:logout' %}">Выход</a>
                 {% else %}
                     <a href="{% url 'pages:login' %}">Вход</a>

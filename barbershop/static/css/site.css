@@ -125,34 +125,33 @@ p {
     margin-top: 10px;
 }
 
-.hero {
-    background: linear-gradient(135deg, rgba(176, 138, 65, 0.15), rgba(8, 8, 8, 0.9)),
-        url("../images/hero-bg.svg") center/cover no-repeat;
-    border: 1px solid #3d3220;
-    border-radius: 20px;
-    padding: 48px 36px;
-    margin-bottom: 36px;
+.hero-simple {
+    text-align: center;
+    padding: 28px 16px 32px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #3d3220;
 }
 
-.hero-label {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #b08a41;
-    font-size: 0.85rem;
-    margin: 0 0 12px;
+.hero-simple h2 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    color: #e6c27a;
 }
 
-.hero-title {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    max-width: 700px;
-    margin-bottom: 14px;
-    line-height: 1.2;
+.hero-simple p {
+    margin: 0;
+    color: #bbb09a;
+    font-size: 1.05rem;
 }
 
-.hero-text {
-    max-width: 560px;
-    color: #ddd1bc;
-    margin-bottom: 24px;
+.section-title {
+    margin-bottom: 6px;
+}
+
+.section-hint {
+    color: #9a9080;
+    font-size: 0.9rem;
+    margin: 0 0 16px;
 }
 
 .btn-row {
@@ -394,4 +393,92 @@ p {
 .data-table th {
     background: #252525;
     color: #e6c27a;
+}
+
+.nav-admin {
+    background: #3d2a15;
+    border-color: #8b6914 !important;
+}
+
+.form-section-wide {
+    max-width: 640px;
+}
+
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+}
+
+.status-pending {
+    background: #3d3518;
+    color: #e6c27a;
+}
+
+.status-confirmed {
+    background: #1f3d2a;
+    color: #8fd4a8;
+}
+
+.status-completed {
+    background: #1f2a3d;
+    color: #8fb8d4;
+}
+
+.status-cancelled {
+    background: #3d1f1f;
+    color: #d48f8f;
+}
+
+.profile-intro {
+    margin-bottom: 40px;
+}
+
+.profile-actions {
+    margin-top: 28px;
+}
+
+.profile-section {
+    margin-top: 48px;
+}
+
+.form-section-spaced {
+    max-width: 520px;
+    margin-top: 24px;
+    padding-top: 8px;
+}
+
+.auth-form-spaced p {
+    margin-bottom: 22px;
+}
+
+.auth-form-spaced .btn-row {
+    margin-top: 32px;
+}
+
+.admin-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.admin-dashboard-card h3 {
+    margin-bottom: 12px;
+}
+
+.admin-dashboard-card p {
+    margin: 6px 0;
+    color: #ddd1bc;
 }

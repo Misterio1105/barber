@@ -1,18 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="form-section">
+<section class="form-section form-section-spaced">
     <h2>Онлайн-запись</h2>
-    {% if selected_master %}
-        <p class="booking-hint">Запись к мастеру: <strong>{{ selected_master.full_name }}</strong></p>
+    {% if selected_service and not selected_master %}
+        <p class="booking-hint">Услуга: <strong>{{ selected_service.name }}</strong> — выберите мастера</p>
+    {% elif selected_master and not selected_service %}
+        <p class="booking-hint">Мастер: <strong>{{ selected_master.full_name }}</strong> — выберите услугу</p>
+    {% elif selected_master and selected_service %}
+        <p class="booking-hint">
+            <strong>{{ selected_master.full_name }}</strong> · {{ selected_service.name }}
+        </p>
     {% endif %}
-    <form method="post" class="auth-form">
+    <form method="post" class="auth-form auth-form-spaced">
         {% csrf_token %}
         {% if form.non_field_errors %}
             <p class="form-errors">{{ form.non_field_errors }}</p>
         {% endif %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Записаться</button>
+        <div class="btn-row profile-actions">
+            <button type="submit" class="btn btn-primary">Записаться</button>
+        </div>
     </form>
 </section>
 {% endblock %}

@@ -11,13 +11,15 @@
             <p class="master-spec">{{ master.specialization }}</p>
             <p>Стаж: {{ master.experience }} лет · Рейтинг: ★ {{ master.rating }}</p>
             <p>{{ master.bio }}</p>
-            <div class="btn-row">
+            <div class="btn-row profile-actions">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'pages:booking' %}?master={{ master.pk }}" class="btn btn-primary">Записаться к этому мастеру</a>
+                    {% booking_url master_id=master.pk as book_link %}
+                    <a href="{{ book_link }}" class="btn btn-primary">Записаться</a>
                 {% else %}
-                    <a href="{% url 'pages:login' %}?next={% url 'pages:booking' %}%3Fmaster%3D{{ master.pk }}" class="btn btn-primary">Войти и записаться</a>
+                    {% login_for_booking master_id=master.pk as book_link %}
+                    <a href="{{ book_link }}" class="btn btn-primary">Войти и записаться</a>
                 {% endif %}
-                <a href="{% url 'pages:masters' %}" class="btn btn-outline">← Все мастера</a>
+                <a href="{% url 'pages:masters' %}" class="btn btn-outline">← Назад</a>
             </div>
         </div>
     </div>
@@ -27,25 +29,22 @@
     <h3>Услуги мастера</h3>
     <div class="card-grid">
         {% for service in master.services.all %}
-            {% include "pages/_service_card.html" with service=service %}
+            {% if user.is_authenticated %}
+                {% booking_url master_id=master.pk service_id=service.pk as book_link %}
+            {% else %}
+                {% login_for_booking master_id=master.pk service_id=service.pk as book_link %}
+            {% endif %}
+            <a class="card card-link card-with-image" href="{{ book_link }}">
+                {% service_image service as img_url %}
+                <img src="{{ img_url }}" alt="{{ service.name }}" class="card-image">
+                <div class="card-body">
+                    <h4>{{ service.name }}</h4>
+                    <p>{{ service.description|truncatewords:15 }}</p>
+                    <p class="card-price"><strong>{{ service.price }} BYN</strong></p>
+                </div>
+            </a>
         {% empty %}
             <p>Услуги не назначены.</p>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="section-block">
-    <h3>Отзывы о мастере</h3>
-    <div class="card-grid">
-        {% for review in reviews %}
-            <article class="card">
-                <h4>{{ review.user.username }}</h4>
-                <p>Услуга: {{ review.service.name }}</p>
-                <p>Оценка: {{ review.rating }}/5</p>
-                <p>{{ review.comment }}</p>
-            </article>
-        {% empty %}
-            <p class="empty-note">Пока нет отзывов об этом мастере.</p>
         {% endfor %}
     </div>
 </section>

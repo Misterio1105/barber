@@ -1,15 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from appointments.models import Appointment
 from masters.models import Master
-from reviews.models import Review
 from services.models import Service
 
-from .forms import AppointmentForm, LoginForm, RegisterForm
+from .forms import AdminAppointmentForm, AppointmentForm, LoginForm, RegisterForm
+
+
+def staff_required(view_func):
+    return login_required(user_passes_test(lambda u: u.is_staff)(view_func))
 
 
 def home(request):
@@ -24,13 +27,10 @@ def home(request):
 
 
 def _apply_service_filters(queryset, request):
-    q = request.GET.get("q", "").strip()
     min_price = request.GET.get("min_price", "").strip()
     max_price = request.GET.get("max_price", "").strip()
     sort = request.GET.get("sort", "name")
 
-    if q:
-        queryset = queryset.filter(Q(name__icontains=q) | Q(description__icontains=q))
     if min_price:
         queryset = queryset.filter(price__gte=min_price)
     if max_price:
@@ -55,81 +55,21 @@ def services_page(request):
     return render(request, "pages/services.html", context)
 
 
-def _apply_master_filters(queryset, request):
-    q = request.GET.get("q", "").strip()
-    min_exp = request.GET.get("min_exp", "").strip()
-    sort = request.GET.get("sort", "rating")
-
-    if q:
-        queryset = queryset.filter(
-            Q(name__icontains=q)
-            | Q(surname__icontains=q)
-            | Q(specialization__icontains=q)
-        )
-    if min_exp:
-        queryset = queryset.filter(experience__gte=min_exp)
-
-    sort_map = {
-        "rating": "-rating",
-        "experience": "-experience",
-        "name": "surname",
-    }
-    return queryset.order_by(sort_map.get(sort, "-rating"))
-
-
 def masters_page(request):
-    queryset = Master.objects.filter(is_active=True)
     context = {
         "title": "Мастера",
-        "masters": _apply_master_filters(queryset, request),
-        "filters": request.GET,
+        "masters": Master.objects.filter(is_active=True).order_by("-rating"),
     }
     return render(request, "pages/masters.html", context)
 
 
 def master_detail(request, pk):
     master = get_object_or_404(Master, pk=pk, is_active=True)
-    reviews = (
-        Review.objects.filter(master=master, is_approved=True)
-        .select_related("user", "service")
-        .order_by("-created_at")
-    )
     context = {
         "title": master.full_name,
         "master": master,
-        "reviews": reviews,
     }
     return render(request, "pages/master_detail.html", context)
-
-
-def _apply_review_filters(queryset, request):
-    min_rating = request.GET.get("min_rating", "").strip()
-    master_id = request.GET.get("master", "").strip()
-    sort = request.GET.get("sort", "date")
-
-    if min_rating:
-        queryset = queryset.filter(rating__gte=min_rating)
-    if master_id:
-        queryset = queryset.filter(master_id=master_id)
-
-    sort_map = {
-        "date": "-created_at",
-        "rating": "-rating",
-    }
-    return queryset.order_by(sort_map.get(sort, "-created_at"))
-
-
-def reviews_page(request):
-    queryset = Review.objects.filter(is_approved=True).select_related(
-        "user", "master", "service"
-    )
-    context = {
-        "title": "Отзывы",
-        "reviews": _apply_review_filters(queryset, request),
-        "masters": Master.objects.filter(is_active=True),
-        "filters": request.GET,
-    }
-    return render(request, "pages/reviews.html", context)
 
 
 def contacts_page(request):
@@ -167,16 +107,26 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect("pages:profile")
 
+    next_url = request.GET.get("next") or request.POST.get("next")
+
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
             messages.success(request, "Вы вошли в аккаунт.")
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}
+            ):
+                return redirect(next_url)
             return redirect("pages:profile")
     else:
         form = LoginForm()
 
-    return render(request, "pages/login.html", {"title": "Вход", "form": form})
+    return render(
+        request,
+        "pages/login.html",
+        {"title": "Вход", "form": form, "next": next_url},
+    )
 
 
 def logout_view(request):
@@ -202,9 +152,13 @@ def profile_view(request):
 @login_required
 def booking_view(request):
     master = None
+    service = None
     master_id = request.GET.get("master") or request.POST.get("master")
+    service_id = request.GET.get("service") or request.POST.get("service")
     if master_id:
         master = Master.objects.filter(pk=master_id, is_active=True).first()
+    if service_id:
+        service = Service.objects.filter(pk=service_id, is_active=True).first()
 
     if request.method == "POST":
         form = AppointmentForm(request.POST)
@@ -218,10 +172,82 @@ def booking_view(request):
         initial = {}
         if master:
             initial["master"] = master
+        if service:
+            initial["service"] = service
         form = AppointmentForm(initial=initial)
 
     return render(
         request,
         "pages/booking.html",
-        {"title": "Онлайн-запись", "form": form, "selected_master": master},
+        {
+            "title": "Онлайн-запись",
+            "form": form,
+            "selected_master": master,
+            "selected_service": service,
+        },
+    )
+
+
+@staff_required
+def admin_dashboard(request):
+    pending_count = Appointment.objects.filter(status="pending").count()
+    context = {
+        "title": "Админка",
+        "pending_count": pending_count,
+        "total_count": Appointment.objects.count(),
+    }
+    return render(request, "pages/admin_dashboard.html", context)
+
+
+@staff_required
+def admin_appointments(request):
+    queryset = Appointment.objects.select_related("user", "master", "service").order_by(
+        "-date", "-time"
+    )
+    status = request.GET.get("status", "").strip()
+    if status:
+        queryset = queryset.filter(status=status)
+
+    context = {
+        "title": "Записи",
+        "appointments": queryset,
+        "status_filter": status,
+        "status_choices": Appointment.STATUS_CHOICES,
+    }
+    return render(request, "pages/admin_appointments.html", context)
+
+
+@staff_required
+def admin_appointment_edit(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+
+    if request.method == "POST":
+        form = AdminAppointmentForm(request.POST, instance=appointment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Запись обновлена.")
+            return redirect("pages:admin_appointments")
+    else:
+        form = AdminAppointmentForm(instance=appointment)
+
+    return render(
+        request,
+        "pages/admin_appointment_edit.html",
+        {"title": "Редактирование записи", "form": form, "appointment": appointment},
+    )
+
+
+@staff_required
+def admin_appointment_delete(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk)
+
+    if request.method == "POST":
+        appointment.delete()
+        messages.success(request, "Запись удалена.")
+        return redirect("pages:admin_appointments")
+
+    return render(
+        request,
+        "pages/admin_appointment_delete.html",
+        {"title": "Удаление записи", "appointment": appointment},
     )

@@ -2,18 +2,7 @@
 
 {% block content %}
 <h2>Мастера</h2>
-
-<form method="get" class="filters-form">
-    <input type="text" name="q" placeholder="Поиск по имени или специализации" value="{{ filters.q|default:'' }}" class="form-control">
-    <input type="number" name="min_exp" placeholder="Стаж от (лет)" value="{{ filters.min_exp|default:'' }}" class="form-control" min="0">
-    <select name="sort" class="form-control">
-        <option value="rating" {% if filters.sort == "rating" %}selected{% endif %}>По рейтингу</option>
-        <option value="experience" {% if filters.sort == "experience" %}selected{% endif %}>По стажу</option>
-        <option value="name" {% if filters.sort == "name" %}selected{% endif %}>По фамилии</option>
-    </select>
-    <button type="submit" class="btn btn-secondary">Применить</button>
-    <a href="{% url 'pages:masters' %}" class="btn btn-outline">Сбросить</a>
-</form>
+<p class="section-hint">Выберите мастера, чтобы посмотреть услуги и отзывы</p>
 
 <div class="card-grid">
     {% for master in masters %}

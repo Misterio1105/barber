@@ -44,22 +44,18 @@ class LoginForm(AuthenticationForm):
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ("master", "service", "date", "time", "comment")
+        fields = ("master", "service", "date", "time")
         labels = {
             "master": "Мастер",
             "service": "Услуга",
             "date": "Дата",
             "time": "Время",
-            "comment": "Комментарий",
         }
         widgets = {
             "master": forms.Select(attrs={"class": "form-control"}),
             "service": forms.Select(attrs={"class": "form-control"}),
             "date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             "time": forms.TimeInput(attrs={"class": "form-control", "type": "time"}),
-            "comment": forms.Textarea(
-                attrs={"class": "form-control", "rows": 3, "placeholder": "Пожелания к записи"}
-            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -68,12 +64,22 @@ class AppointmentForm(forms.ModelForm):
         self.fields["service"].queryset = Service.objects.filter(is_active=True)
 
         master = self.initial.get("master")
+        service = self.initial.get("service")
+        if isinstance(master, int):
+            master = Master.objects.filter(pk=master, is_active=True).first()
+        if isinstance(service, int):
+            service = Service.objects.filter(pk=service, is_active=True).first()
+
         if master:
-            if isinstance(master, int):
-                master = Master.objects.filter(pk=master, is_active=True).first()
-            if master:
-                self.fields["service"].queryset = master.services.filter(is_active=True)
-                self.fields["master"].initial = master.pk
+            self.fields["master"].initial = master.pk
+            self.fields["service"].queryset = master.services.filter(is_active=True)
+            if service:
+                self.fields["service"].initial = service.pk
+        elif service:
+            self.fields["service"].initial = service.pk
+            self.fields["master"].queryset = Master.objects.filter(
+                is_active=True, services=service
+            ).distinct()
 
     def clean(self):
         cleaned = super().clean()
@@ -82,3 +88,30 @@ class AppointmentForm(forms.ModelForm):
         if master and service and not master.services.filter(pk=service.pk).exists():
             raise forms.ValidationError("Выбранный мастер не выполняет эту услугу.")
         return cleaned
+
+
+class AdminAppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ("user", "master", "service", "date", "time", "status")
+        labels = {
+            "user": "Клиент",
+            "master": "Мастер",
+            "service": "Услуга",
+            "date": "Дата",
+            "time": "Время",
+            "status": "Статус",
+        }
+        widgets = {
+            "user": forms.Select(attrs={"class": "form-control"}),
+            "master": forms.Select(attrs={"class": "form-control"}),
+            "service": forms.Select(attrs={"class": "form-control"}),
+            "date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "time": forms.TimeInput(attrs={"class": "form-control", "type": "time"}),
+            "status": forms.Select(attrs={"class": "form-control"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["master"].queryset = Master.objects.filter(is_active=True)
+        self.fields["service"].queryset = Service.objects.filter(is_active=True)

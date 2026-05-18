@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 db.sqlite3
 media/
+barbershop/pages/management/commands/populate_barbershop.py

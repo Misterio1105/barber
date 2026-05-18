@@ -5,6 +5,7 @@
     <h2>Вход</h2>
     <form method="post" class="auth-form">
         {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">Войти</button>
     </form>

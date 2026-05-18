@@ -2,31 +2,23 @@
 {% load barber_extras %}
 
 {% block content %}
-<section class="hero">
-    <div class="hero-content">
-        <p class="hero-label">BarberShop COLT · Минск</p>
-        <h2 class="hero-title">Стильные мужские стрижки и уход за бородой</h2>
-        <p class="hero-text">Профессиональные мастера, уютная атмосфера и онлайн-запись без звонков.</p>
-        <div class="btn-row">
-            {% if user.is_authenticated %}
-                <a href="{% url 'pages:booking' %}" class="btn btn-primary">Онлайн-запись</a>
-                <a href="{% url 'pages:profile' %}" class="btn btn-outline">Личный кабинет</a>
-            {% else %}
-                <a href="{% url 'pages:register' %}" class="btn btn-primary">Записаться</a>
-                <a href="{% url 'pages:services' %}" class="btn btn-outline">Смотреть услуги</a>
-            {% endif %}
-        </div>
-    </div>
+<section class="hero hero-simple">
+    <h2>BarberShop COLT</h2>
+    <p>Мужские стрижки и уход за бородой</p>
 </section>
 
 <section class="section-block">
-    <div class="section-head">
-        <h3>Популярные услуги</h3>
-        <a href="{% url 'pages:services' %}" class="section-link">Все услуги →</a>
-    </div>
+    <h3 class="section-title">Услуги</h3>
+    <p class="section-hint">Нажмите на услугу — откроется запись, выберите мастера</p>
     <div class="card-grid">
         {% for service in services %}
-            <a class="card card-link card-with-image" href="{% url 'pages:services' %}">
+            {% if user.is_authenticated %}
+                {% booking_url service_id=service.pk as book_link %}
+                <a class="card card-link card-with-image" href="{{ book_link }}">
+            {% else %}
+                {% login_for_booking service_id=service.pk as book_link %}
+                <a class="card card-link card-with-image" href="{{ book_link }}">
+            {% endif %}
                 {% service_image service as img_url %}
                 <img src="{{ img_url }}" alt="{{ service.name }}" class="card-image">
                 <div class="card-body">
@@ -42,10 +34,8 @@
 </section>
 
 <section class="section-block">
-    <div class="section-head">
-        <h3>Наши мастера</h3>
-        <a href="{% url 'pages:masters' %}" class="section-link">Все мастера →</a>
-    </div>
+    <h3 class="section-title">Мастера</h3>
+    <p class="section-hint">Нажмите на мастера — его услуги и отзывы</p>
     <div class="card-grid">
         {% for master in masters %}
             {% include "pages/_master_card.html" with master=master %}
@@ -53,11 +43,5 @@
             <p>Мастера пока не добавлены.</p>
         {% endfor %}
     </div>
-</section>
-
-<section class="cta-banner">
-    <h3>Готовы к новому образу?</h3>
-    <p>Выберите мастера, услугу и удобное время.</p>
-    <a href="{% url 'pages:masters' %}" class="btn btn-primary">Выбрать мастера</a>
 </section>
 {% endblock %}

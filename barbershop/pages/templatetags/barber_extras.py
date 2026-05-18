@@ -1,6 +1,9 @@
+from urllib.parse import quote
+
 from django import template
 from django.contrib.staticfiles.finders import find
 from django.templatetags.static import static
+from django.urls import reverse
 
 register = template.Library()
 
@@ -23,3 +26,22 @@ def service_image(service):
 @register.simple_tag
 def master_image(master):
     return _image_url(master.photo, "masters", master.pk)
+
+
+@register.simple_tag
+def booking_url(service_id=None, master_id=None):
+    url = reverse("pages:booking")
+    params = []
+    if service_id:
+        params.append(f"service={service_id}")
+    if master_id:
+        params.append(f"master={master_id}")
+    if params:
+        url += "?" + "&".join(params)
+    return url
+
+
+@register.simple_tag
+def login_for_booking(service_id=None, master_id=None):
+    target = booking_url(service_id, master_id)
+    return reverse("pages:login") + "?next=" + quote(target, safe="")
