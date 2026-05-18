@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="site-header">
-        <div class="container">
+        <div class="container header-row">
             <h1 class="logo"><a href="{% url 'pages:home' %}">COLT</a></h1>
             <nav>
                 <a href="{% url 'pages:home' %}">Главная</a>
@@ -17,10 +17,25 @@
                 <a href="{% url 'pages:masters' %}">Мастера</a>
                 <a href="{% url 'pages:reviews' %}">Отзывы</a>
                 <a href="{% url 'pages:contacts' %}">Контакты</a>
-                <a href="{% url 'pages:bim' %}">ghbdtn</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'pages:profile' %}">Кабинет</a>
+                    <a href="{% url 'pages:booking' %}" class="nav-booking">Запись</a>
+                    <a href="{% url 'pages:logout' %}">Выход</a>
+                {% else %}
+                    <a href="{% url 'pages:login' %}">Вход</a>
+                    <a href="{% url 'pages:register' %}">Регистрация</a>
+                {% endif %}
             </nav>
         </div>
     </header>
+
+    {% if messages %}
+        <div class="container messages">
+            {% for message in messages %}
+                <p class="message message-{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <main class="container">
         {% block content %}{% endblock %}
