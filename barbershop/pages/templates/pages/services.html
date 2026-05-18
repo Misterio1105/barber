@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Услуги</h2>
+
+<div class="card-grid">
+    {% for service in services %}
+        <article class="card">
+            <h3>{{ service.name }}</h3>
+            <p>{{ service.description }}</p>
+            <p>Цена: <strong>{{ service.price }} BYN</strong></p>
+            <p>Длительность: {{ service.duration }} мин.</p>
+        </article>
+    {% empty %}
+        <p>Пока нет данных об услугах.</p>
+    {% endfor %}
+</div>
+{% endblock %}

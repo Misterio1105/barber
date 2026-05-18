@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="intro">
+    <h2>Добро пожаловать в BarberShop COLT</h2>
+    <p>Стильные мужских прически и бороды.</p>
+</section>
+
+<section>
+    <h3>Популярные услуги</h3>
+    <div class="card-grid">
+        {% for service in services %}
+            <a class="card card-link" href="{% url 'pages:services' %}">
+                <h4>{{ service.name }}</h4>
+                <p>{{ service.description|truncatewords:15 }}</p>
+                <p><strong>{{ service.price }} BYN</strong></p>
+            </a>
+        {% empty %}
+            <p>Услуги пока не добавлены.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h3>Наши мастера</h3>
+    <div class="card-grid">
+        {% for master in masters %}
+            <a class="card card-link" href="{% url 'pages:masters' %}">
+                <h4>{{ master.full_name }}</h4>
+                <p>{{ master.specialization }}</p>
+                <p>Стаж: {{ master.experience }} лет</p>
+            </a>
+        {% empty %}
+            <p>Мастера пока не добавлены.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

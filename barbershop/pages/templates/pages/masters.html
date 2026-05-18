@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Мастера</h2>
+
+<div class="card-grid">
+    {% for master in masters %}
+        <article class="card">
+            <h3>{{ master.full_name }}</h3>
+            <p>Специализация: {{ master.specialization }}</p>
+            <p>Стаж: {{ master.experience }} лет</p>
+            <p>{{ master.bio|truncatewords:20 }}</p>
+        </article>
+    {% empty %}
+        <p>Пока нет данных о мастерах.</p>
+    {% endfor %}
+</div>
+{% endblock %}

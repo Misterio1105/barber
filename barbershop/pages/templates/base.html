@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title|default:"Барбершоп" }}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <h1 class="logo"><a href="{% url 'pages:home' %}">COLT</a></h1>
+            <nav>
+                <a href="{% url 'pages:home' %}">Главная</a>
+                <a href="{% url 'pages:services' %}">Услуги</a>
+                <a href="{% url 'pages:masters' %}">Мастера</a>
+                <a href="{% url 'pages:reviews' %}">Отзывы</a>
+                <a href="{% url 'pages:contacts' %}">Контакты</a>
+                <a href="{% url 'pages:bim' %}">ghbdtn</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Данильченко Павел</p>
+        </div>
+    </footer>
+</body>
+</html>

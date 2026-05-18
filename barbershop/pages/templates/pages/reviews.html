@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Отзывы</h2>
+
+<div class="card-grid">
+    {% for review in reviews %}
+        <article class="card">
+            <h3>{{ review.user.username }}</h3>
+            <p>Мастер: {{ review.master.full_name }}</p>
+            <p>Услуга: {{ review.service.name }}</p>
+            <p>Оценка: {{ review.rating }}/5</p>
+            <p>{{ review.comment }}</p>
+        </article>
+    {% empty %}
+        <p>Отзывов пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}
