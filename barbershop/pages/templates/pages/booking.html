@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-section">
+    <h2>Онлайн-запись</h2>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <p class="form-errors">{{ form.non_field_errors }}</p>
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Записаться</button>
+    </form>
+</section>
+{% endblock %}

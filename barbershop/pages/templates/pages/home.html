@@ -3,7 +3,12 @@
 {% block content %}
 <section class="intro">
     <h2>Добро пожаловать в BarberShop COLT</h2>
-    <p>Стильные мужских прически и бороды.</p>
+    <p>Стильные мужские стрижки и бороды.</p>
+    {% if user.is_authenticated %}
+        <a href="{% url 'pages:booking' %}" class="btn btn-primary">Онлайн-запись</a>
+    {% else %}
+        <a href="{% url 'pages:register' %}" class="btn btn-primary">Записаться онлайн</a>
+    {% endif %}
 </section>
 
 <section>
