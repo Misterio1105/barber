@@ -1,24 +1,39 @@
 {% extends "base.html" %}
+{% load barber_extras %}
 
 {% block content %}
-<section class="intro">
-    <h2>Добро пожаловать в BarberShop COLT</h2>
-    <p>Стильные мужские стрижки и бороды.</p>
-    {% if user.is_authenticated %}
-        <a href="{% url 'pages:booking' %}" class="btn btn-primary">Онлайн-запись</a>
-    {% else %}
-        <a href="{% url 'pages:register' %}" class="btn btn-primary">Записаться онлайн</a>
-    {% endif %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="hero-label">BarberShop COLT · Минск</p>
+        <h2 class="hero-title">Стильные мужские стрижки и уход за бородой</h2>
+        <p class="hero-text">Профессиональные мастера, уютная атмосфера и онлайн-запись без звонков.</p>
+        <div class="btn-row">
+            {% if user.is_authenticated %}
+                <a href="{% url 'pages:booking' %}" class="btn btn-primary">Онлайн-запись</a>
+                <a href="{% url 'pages:profile' %}" class="btn btn-outline">Личный кабинет</a>
+            {% else %}
+                <a href="{% url 'pages:register' %}" class="btn btn-primary">Записаться</a>
+                <a href="{% url 'pages:services' %}" class="btn btn-outline">Смотреть услуги</a>
+            {% endif %}
+        </div>
+    </div>
 </section>
 
-<section>
-    <h3>Популярные услуги</h3>
+<section class="section-block">
+    <div class="section-head">
+        <h3>Популярные услуги</h3>
+        <a href="{% url 'pages:services' %}" class="section-link">Все услуги →</a>
+    </div>
     <div class="card-grid">
         {% for service in services %}
-            <a class="card card-link" href="{% url 'pages:services' %}">
-                <h4>{{ service.name }}</h4>
-                <p>{{ service.description|truncatewords:15 }}</p>
-                <p><strong>{{ service.price }} BYN</strong></p>
+            <a class="card card-link card-with-image" href="{% url 'pages:services' %}">
+                {% service_image service as img_url %}
+                <img src="{{ img_url }}" alt="{{ service.name }}" class="card-image">
+                <div class="card-body">
+                    <h4>{{ service.name }}</h4>
+                    <p>{{ service.description|truncatewords:12 }}</p>
+                    <p class="card-price"><strong>{{ service.price }} BYN</strong></p>
+                </div>
             </a>
         {% empty %}
             <p>Услуги пока не добавлены.</p>
@@ -26,18 +41,23 @@
     </div>
 </section>
 
-<section>
-    <h3>Наши мастера</h3>
+<section class="section-block">
+    <div class="section-head">
+        <h3>Наши мастера</h3>
+        <a href="{% url 'pages:masters' %}" class="section-link">Все мастера →</a>
+    </div>
     <div class="card-grid">
         {% for master in masters %}
-            <a class="card card-link" href="{% url 'pages:masters' %}">
-                <h4>{{ master.full_name }}</h4>
-                <p>{{ master.specialization }}</p>
-                <p>Стаж: {{ master.experience }} лет</p>
-            </a>
+            {% include "pages/_master_card.html" with master=master %}
         {% empty %}
             <p>Мастера пока не добавлены.</p>
         {% endfor %}
     </div>
+</section>
+
+<section class="cta-banner">
+    <h3>Готовы к новому образу?</h3>
+    <p>Выберите мастера, услугу и удобное время.</p>
+    <a href="{% url 'pages:masters' %}" class="btn btn-primary">Выбрать мастера</a>
 </section>
 {% endblock %}

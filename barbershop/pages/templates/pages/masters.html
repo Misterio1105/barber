@@ -17,13 +17,7 @@
 
 <div class="card-grid">
     {% for master in masters %}
-        <article class="card">
-            <h3>{{ master.full_name }}</h3>
-            <p>Специализация: {{ master.specialization }}</p>
-            <p>Стаж: {{ master.experience }} лет</p>
-            <p>Рейтинг: {{ master.rating }}</p>
-            <p>{{ master.bio|truncatewords:20 }}</p>
-        </article>
+        {% include "pages/_master_card.html" with master=master %}
     {% empty %}
         <p>Мастера не найдены.</p>
     {% endfor %}

@@ -1,0 +1,10 @@
+{% load barber_extras %}
+<a class="card card-link card-with-image" href="{% url 'pages:master_detail' master.pk %}">
+    {% master_image master as img_url %}
+    <img src="{{ img_url }}" alt="{{ master.full_name }}" class="card-image">
+    <div class="card-body">
+        <h3>{{ master.full_name }}</h3>
+        <p>{{ master.specialization }}</p>
+        <p class="card-meta">Стаж {{ master.experience }} лет · ★ {{ master.rating }}</p>
+    </div>
+</a>

@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from appointments.models import Appointment
 from masters.models import Master
@@ -85,6 +85,21 @@ def masters_page(request):
         "filters": request.GET,
     }
     return render(request, "pages/masters.html", context)
+
+
+def master_detail(request, pk):
+    master = get_object_or_404(Master, pk=pk, is_active=True)
+    reviews = (
+        Review.objects.filter(master=master, is_approved=True)
+        .select_related("user", "service")
+        .order_by("-created_at")
+    )
+    context = {
+        "title": master.full_name,
+        "master": master,
+        "reviews": reviews,
+    }
+    return render(request, "pages/master_detail.html", context)
 
 
 def _apply_review_filters(queryset, request):
@@ -186,6 +201,11 @@ def profile_view(request):
 
 @login_required
 def booking_view(request):
+    master = None
+    master_id = request.GET.get("master") or request.POST.get("master")
+    if master_id:
+        master = Master.objects.filter(pk=master_id, is_active=True).first()
+
     if request.method == "POST":
         form = AppointmentForm(request.POST)
         if form.is_valid():
@@ -195,10 +215,13 @@ def booking_view(request):
             messages.success(request, "Запись успешно создана.")
             return redirect("pages:profile")
     else:
-        form = AppointmentForm()
+        initial = {}
+        if master:
+            initial["master"] = master
+        form = AppointmentForm(initial=initial)
 
     return render(
         request,
         "pages/booking.html",
-        {"title": "Онлайн-запись", "form": form},
+        {"title": "Онлайн-запись", "form": form, "selected_master": master},
     )

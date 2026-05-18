@@ -97,6 +97,147 @@ p {
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
+.card-with-image {
+    padding: 0;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    background: #111;
+}
+
+.card-body {
+    padding: 16px 18px 18px;
+}
+
+.card-body h3,
+.card-body h4 {
+    margin-bottom: 8px;
+}
+
+.card-price,
+.card-meta {
+    color: #e6c27a;
+    margin-top: 10px;
+}
+
+.hero {
+    background: linear-gradient(135deg, rgba(176, 138, 65, 0.15), rgba(8, 8, 8, 0.9)),
+        url("../images/hero-bg.svg") center/cover no-repeat;
+    border: 1px solid #3d3220;
+    border-radius: 20px;
+    padding: 48px 36px;
+    margin-bottom: 36px;
+}
+
+.hero-label {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #b08a41;
+    font-size: 0.85rem;
+    margin: 0 0 12px;
+}
+
+.hero-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    max-width: 700px;
+    margin-bottom: 14px;
+    line-height: 1.2;
+}
+
+.hero-text {
+    max-width: 560px;
+    color: #ddd1bc;
+    margin-bottom: 24px;
+}
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.section-block {
+    margin-bottom: 40px;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.section-link {
+    color: #e6c27a;
+    text-decoration: none;
+}
+
+.section-link:hover {
+    text-decoration: underline;
+}
+
+.cta-banner {
+    text-align: center;
+    padding: 36px 24px;
+    border-radius: 16px;
+    background: #1b1b1b;
+    border: 1px solid #b08a41;
+}
+
+.cta-banner p {
+    color: #ddd1bc;
+}
+
+.master-detail-header {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) 1fr;
+    gap: 28px;
+    align-items: start;
+    margin-bottom: 32px;
+}
+
+.master-detail-photo {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+    aspect-ratio: 4/5;
+    border: 1px solid #3d3220;
+}
+
+.master-spec {
+    color: #e6c27a;
+    font-size: 1.05rem;
+}
+
+.booking-hint {
+    background: #252015;
+    border: 1px solid #5a4a28;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.empty-note {
+    color: #aaa;
+}
+
+@media (max-width: 720px) {
+    .master-detail-header {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding: 32px 20px;
+    }
+}
+
 .card-link {
     display: block;
     text-decoration: none;

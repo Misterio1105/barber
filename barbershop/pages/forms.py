@@ -67,6 +67,14 @@ class AppointmentForm(forms.ModelForm):
         self.fields["master"].queryset = Master.objects.filter(is_active=True)
         self.fields["service"].queryset = Service.objects.filter(is_active=True)
 
+        master = self.initial.get("master")
+        if master:
+            if isinstance(master, int):
+                master = Master.objects.filter(pk=master, is_active=True).first()
+            if master:
+                self.fields["service"].queryset = master.services.filter(is_active=True)
+                self.fields["master"].initial = master.pk
+
     def clean(self):
         cleaned = super().clean()
         master = cleaned.get("master")

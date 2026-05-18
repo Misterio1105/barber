@@ -19,12 +19,7 @@
 
 <div class="card-grid">
     {% for service in services %}
-        <article class="card">
-            <h3>{{ service.name }}</h3>
-            <p>{{ service.description }}</p>
-            <p>Цена: <strong>{{ service.price }} BYN</strong></p>
-            <p>Длительность: {{ service.duration }} мин.</p>
-        </article>
+        {% include "pages/_service_card.html" with service=service %}
     {% empty %}
         <p>По вашему запросу услуги не найдены.</p>
     {% endfor %}
