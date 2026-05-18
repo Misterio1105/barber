@@ -3,6 +3,27 @@
 {% block content %}
 <h2>Отзывы</h2>
 
+<form method="get" class="filters-form">
+    <select name="master" class="form-control">
+        <option value="">Все мастера</option>
+        {% for m in masters %}
+            <option value="{{ m.id }}" {% if filters.master == m.id|stringformat:"s" %}selected{% endif %}>{{ m.full_name }}</option>
+        {% endfor %}
+    </select>
+    <select name="min_rating" class="form-control">
+        <option value="">Любая оценка</option>
+        <option value="5" {% if filters.min_rating == "5" %}selected{% endif %}>5 звёзд</option>
+        <option value="4" {% if filters.min_rating == "4" %}selected{% endif %}>от 4</option>
+        <option value="3" {% if filters.min_rating == "3" %}selected{% endif %}>от 3</option>
+    </select>
+    <select name="sort" class="form-control">
+        <option value="date" {% if filters.sort == "date" %}selected{% endif %}>Сначала новые</option>
+        <option value="rating" {% if filters.sort == "rating" %}selected{% endif %}>По оценке</option>
+    </select>
+    <button type="submit" class="btn btn-secondary">Применить</button>
+    <a href="{% url 'pages:reviews' %}" class="btn btn-outline">Сбросить</a>
+</form>
+
 <div class="card-grid">
     {% for review in reviews %}
         <article class="card">
@@ -13,7 +34,7 @@
             <p>{{ review.comment }}</p>
         </article>
     {% empty %}
-        <p>Отзывов пока нет.</p>
+        <p>Отзывов не найдено.</p>
     {% endfor %}
 </div>
 {% endblock %}
