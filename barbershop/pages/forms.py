@@ -33,6 +33,11 @@ def default_booking_date():
     return booking_date_min()
 
 
+def _strip_help_text(form):
+    for field in form.fields.values():
+        field.help_text = ""
+
+
 class RegisterForm(UserCreationForm):
     phone = forms.CharField(
         label="Телефон",
@@ -51,6 +56,10 @@ class RegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        _strip_help_text(self)
+        self.fields["username"].label = "Логин"
+        self.fields["password1"].label = "Пароль"
+        self.fields["password2"].label = "Подтверждение пароля"
         for field in self.fields.values():
             if "class" not in field.widget.attrs:
                 field.widget.attrs["class"] = "form-control"
@@ -59,6 +68,7 @@ class RegisterForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        _strip_help_text(self)
         self.fields["username"].label = "Логин"
         self.fields["password"].label = "Пароль"
         for field in self.fields.values():
@@ -77,6 +87,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        _strip_help_text(self)
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-control"
 
@@ -105,6 +116,7 @@ class AppointmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        _strip_help_text(self)
         self.fields["master"].queryset = Master.objects.filter(is_active=True)
         self.fields["service"].queryset = Service.objects.filter(is_active=True)
 
@@ -167,33 +179,6 @@ class AppointmentForm(forms.ModelForm):
         return cleaned
 
 
-class AdminAppointmentForm(forms.ModelForm):
-    class Meta:
-        model = Appointment
-        fields = ("user", "master", "service", "date", "time", "status")
-        labels = {
-            "user": "Клиент",
-            "master": "Мастер",
-            "service": "Услуга",
-            "date": "Дата",
-            "time": "Время",
-            "status": "Статус",
-        }
-        widgets = {
-            "user": forms.Select(attrs={"class": "form-control"}),
-            "master": forms.Select(attrs={"class": "form-control"}),
-            "service": forms.Select(attrs={"class": "form-control"}),
-            "date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "time": forms.TimeInput(attrs={"class": "form-control", "type": "time"}),
-            "status": forms.Select(attrs={"class": "form-control"}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["master"].queryset = Master.objects.filter(is_active=True)
-        self.fields["service"].queryset = Service.objects.filter(is_active=True)
-
-
 class MasterCommentForm(forms.ModelForm):
     class Meta:
         model = MasterComment
@@ -204,3 +189,7 @@ class MasterCommentForm(forms.ModelForm):
                 attrs={"class": "form-control", "rows": 3, "placeholder": "Ваш комментарий"}
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _strip_help_text(self)

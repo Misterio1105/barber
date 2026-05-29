@@ -20,16 +20,6 @@ urlpatterns = [
         name="cancel_appointment",
     ),
     path("booking/", views.booking_view, name="booking"),
-    path("manage/", views.admin_dashboard, name="admin_dashboard"),
-    path("manage/appointments/", views.admin_appointments, name="admin_appointments"),
-    path(
-        "manage/appointments/<int:pk>/edit/",
-        views.admin_appointment_edit,
-        name="admin_appointment_edit",
-    ),
-    path(
-        "manage/appointments/<int:pk>/delete/",
-        views.admin_appointment_delete,
-        name="admin_appointment_delete",
-    ),
+    path("comments/<int:pk>/edit/", views.comment_edit, name="comment_edit"),
+    path("comments/<int:pk>/delete/", views.comment_delete, name="comment_delete"),
 ]

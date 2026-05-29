@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-section">
+    <h2>Удаление комментария</h2>
+    <p class="booking-hint">
+        {{ comment.user.username }} · {{ comment.master.full_name }} ·
+        {{ comment.created_at|date:"d.m.Y H:i" }}
+    </p>
+    <p>{{ comment.text }}</p>
+    <p>Вы уверены, что хотите удалить этот комментарий?</p>
+    <form method="post" class="btn-row profile-actions">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Да, удалить</button>
+        <a href="{% url 'pages:master_detail' comment.master.pk %}" class="btn btn-outline">Отмена</a>
+    </form>
+</section>
+{% endblock %}

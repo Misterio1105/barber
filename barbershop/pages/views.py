@@ -6,10 +6,10 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 from appointments.models import Appointment
 from masters.models import Master
+from reviews.models import MasterComment
 from services.models import Service
 
 from .forms import (
-    AdminAppointmentForm,
     AppointmentForm,
     LoginForm,
     MasterCommentForm,
@@ -243,65 +243,37 @@ def booking_view(request):
 
 
 @staff_required
-def admin_dashboard(request):
-    pending_count = Appointment.objects.filter(status="pending").count()
-    context = {
-        "title": "Админка",
-        "pending_count": pending_count,
-        "total_count": Appointment.objects.count(),
-    }
-    return render(request, "pages/admin_dashboard.html", context)
-
-
-@staff_required
-def admin_appointments(request):
-    queryset = Appointment.objects.select_related("user", "master", "service").order_by(
-        "-date", "-time"
-    )
-    status = request.GET.get("status", "").strip()
-    if status:
-        queryset = queryset.filter(status=status)
-
-    context = {
-        "title": "Записи",
-        "appointments": queryset,
-        "status_filter": status,
-        "status_choices": Appointment.STATUS_CHOICES,
-    }
-    return render(request, "pages/admin_appointments.html", context)
-
-
-@staff_required
-def admin_appointment_edit(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk)
+def comment_edit(request, pk):
+    comment = get_object_or_404(MasterComment.objects.select_related("master"), pk=pk)
 
     if request.method == "POST":
-        form = AdminAppointmentForm(request.POST, instance=appointment)
+        form = MasterCommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save()
-            messages.success(request, "Запись обновлена.")
-            return redirect("pages:admin_appointments")
+            messages.success(request, "Комментарий обновлён.")
+            return redirect("pages:master_detail", pk=comment.master.pk)
     else:
-        form = AdminAppointmentForm(instance=appointment)
+        form = MasterCommentForm(instance=comment)
 
     return render(
         request,
-        "pages/admin_appointment_edit.html",
-        {"title": "Редактирование записи", "form": form, "appointment": appointment},
+        "pages/comment_edit.html",
+        {"title": "Редактирование комментария", "form": form, "comment": comment},
     )
 
 
 @staff_required
-def admin_appointment_delete(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk)
+def comment_delete(request, pk):
+    comment = get_object_or_404(MasterComment.objects.select_related("master"), pk=pk)
 
     if request.method == "POST":
-        appointment.delete()
-        messages.success(request, "Запись удалена.")
-        return redirect("pages:admin_appointments")
+        master_pk = comment.master.pk
+        comment.delete()
+        messages.success(request, "Комментарий удалён.")
+        return redirect("pages:master_detail", pk=master_pk)
 
     return render(
         request,
-        "pages/admin_appointment_delete.html",
-        {"title": "Удаление записи", "appointment": appointment},
+        "pages/comment_delete.html",
+        {"title": "Удаление комментария", "comment": comment},
     )

@@ -3,15 +3,6 @@
 {% block content %}
 <section class="form-section form-section-spaced">
     <h2>Онлайн-запись</h2>
-    {% if selected_service and not selected_master %}
-        <p class="booking-hint">Услуга: <strong>{{ selected_service.name }}</strong> — выберите мастера</p>
-    {% elif selected_master and not selected_service %}
-        <p class="booking-hint">Мастер: <strong>{{ selected_master.full_name }}</strong> — выберите услугу</p>
-    {% elif selected_master and selected_service %}
-        <p class="booking-hint">
-            <strong>{{ selected_master.full_name }}</strong> · {{ selected_service.name }}
-        </p>
-    {% endif %}
     <form method="post" class="auth-form auth-form-spaced">
         {% csrf_token %}
         {% if form.non_field_errors %}

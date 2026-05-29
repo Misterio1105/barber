@@ -71,6 +71,12 @@
                         · {{ comment.created_at|date:"d.m.Y H:i" }}
                     </p>
                     <p>{{ comment.text }}</p>
+                    {% if user.is_staff %}
+                        <div class="btn-row comment-actions">
+                            <a href="{% url 'pages:comment_edit' comment.pk %}" class="btn btn-secondary btn-sm">Изменить</a>
+                            <a href="{% url 'pages:comment_delete' comment.pk %}" class="btn btn-outline btn-sm">Удалить</a>
+                        </div>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>

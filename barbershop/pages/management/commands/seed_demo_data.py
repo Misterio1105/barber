@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand
 
 from appointments.models import Appointment
 from masters.models import Master
-from reviews.models import Review
 from services.models import Service
 from users.models import User
 
@@ -77,17 +76,6 @@ class Command(BaseCommand):
             date=date.today(),
             time=time(12, 0),
             defaults={"status": "pending", "comment": "Учебная запись"},
-        )
-
-        Review.objects.get_or_create(
-            user=user,
-            master=master_1,
-            service=fade,
-            defaults={
-                "rating": 5,
-                "comment": "Отличный мастер, аккуратная стрижка.",
-                "is_approved": True,
-            },
         )
 
         self.stdout.write(self.style.SUCCESS("Demo data created or already exists."))

@@ -513,6 +513,11 @@ p {
     margin-bottom: 8px;
 }
 
+.comment-actions {
+    margin-top: 10px;
+    gap: 8px;
+}
+
 .profile-edit-form {
     max-width: 420px;
 }
