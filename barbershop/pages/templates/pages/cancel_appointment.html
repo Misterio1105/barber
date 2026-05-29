@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-section">
+    <h2>Отмена записи</h2>
+    <p>
+        {{ appointment.date }} в {{ appointment.time }} —
+        {{ appointment.master.full_name }}, {{ appointment.service.name }}
+    </p>
+    <p>Вы уверены, что хотите отменить запись?</p>
+    <form method="post" class="btn-row profile-actions">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Да, отменить</button>
+        <a href="{% url 'pages:profile' %}" class="btn btn-outline">Нет, вернуться</a>
+    </form>
+</section>
+{% endblock %}

@@ -24,3 +24,39 @@
     </form>
 </section>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var serviceSelect = document.getElementById("id_service");
+    var masterSelect = document.getElementById("id_master");
+    if (!serviceSelect) return;
+
+    serviceSelect.addEventListener("change", function () {
+        var params = new URLSearchParams();
+        if (serviceSelect.value) {
+            params.set("service", serviceSelect.value);
+        }
+        if (masterSelect && masterSelect.value) {
+            params.set("master", masterSelect.value);
+        }
+        var query = params.toString();
+        window.location = "{% url 'pages:booking' %}" + (query ? "?" + query : "");
+    });
+
+    if (masterSelect) {
+        masterSelect.addEventListener("change", function () {
+            var params = new URLSearchParams();
+            if (serviceSelect.value) {
+                params.set("service", serviceSelect.value);
+            }
+            if (masterSelect.value) {
+                params.set("master", masterSelect.value);
+            }
+            var query = params.toString();
+            window.location = "{% url 'pages:booking' %}" + (query ? "?" + query : "");
+        });
+    }
+})();
+</script>
+{% endblock %}

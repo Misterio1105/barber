@@ -15,3 +15,16 @@ class Review(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.rating}★"
+
+
+class MasterComment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="master_comments")
+    master = models.ForeignKey(Master, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} → {self.master.full_name}"

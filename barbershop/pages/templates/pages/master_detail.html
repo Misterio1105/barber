@@ -48,4 +48,34 @@
         {% endfor %}
     </div>
 </section>
+
+<section class="section-block">
+    <h3>Комментарии</h3>
+    {% if comment_form %}
+        <form method="post" class="auth-form auth-form-spaced comment-form">
+            {% csrf_token %}
+            <input type="hidden" name="comment_submit" value="1">
+            {{ comment_form.as_p }}
+            <button type="submit" class="btn btn-secondary">Оставить комментарий</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'pages:login' %}?next={{ request.path|urlencode }}">Войдите</a>, чтобы оставить комментарий.</p>
+    {% endif %}
+
+    {% if comments %}
+        <ul class="comment-list">
+            {% for comment in comments %}
+                <li class="comment-item">
+                    <p class="comment-meta">
+                        <strong>{{ comment.user.username }}</strong>
+                        · {{ comment.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                    <p>{{ comment.text }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пока нет комментариев.</p>
+    {% endif %}
+</section>
 {% endblock %}

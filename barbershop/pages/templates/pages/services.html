@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load barber_extras %}
 
 {% block content %}
 <h2>Услуги</h2>
@@ -18,7 +19,14 @@
 
 <div class="card-grid">
     {% for service in services %}
-        {% include "pages/_service_card.html" with service=service %}
+        {% if user.is_authenticated %}
+            {% booking_url service_id=service.pk as book_link %}
+        {% else %}
+            {% login_for_booking service_id=service.pk as book_link %}
+        {% endif %}
+        <a class="card card-link card-with-image" href="{{ book_link }}">
+            {% include "pages/_service_card.html" with service=service linkless=True %}
+        </a>
     {% empty %}
         <p>По вашему запросу услуги не найдены.</p>
     {% endfor %}

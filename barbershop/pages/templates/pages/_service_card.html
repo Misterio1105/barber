@@ -1,4 +1,13 @@
 {% load barber_extras %}
+{% if linkless %}
+    {% service_image service as img_url %}
+    <img src="{{ img_url }}" alt="{{ service.name }}" class="card-image">
+    <div class="card-body">
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.description|truncatewords:20 }}</p>
+        <p class="card-price"><strong>{{ service.price }} BYN</strong> · {{ service.duration }} мин.</p>
+    </div>
+{% else %}
 <article class="card card-with-image">
     {% service_image service as img_url %}
     <img src="{{ img_url }}" alt="{{ service.name }}" class="card-image">
@@ -8,3 +17,4 @@
         <p class="card-price"><strong>{{ service.price }} BYN</strong> · {{ service.duration }} мин.</p>
     </div>
 </article>
+{% endif %}

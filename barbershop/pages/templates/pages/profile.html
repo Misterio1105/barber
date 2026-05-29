@@ -3,12 +3,18 @@
 {% block content %}
 <section class="intro profile-intro">
     <h2>Личный кабинет</h2>
-    <p>Пользователь: <strong>{{ request.user.username }}</strong></p>
-    <p>Телефон: {{ request.user.phone }}</p>
-    <p>Email: {{ request.user.email|default:"не указан" }}</p>
-    <div class="btn-row profile-actions">
-        <a href="{% url 'pages:booking' %}" class="btn btn-primary">Новая запись</a>
-    </div>
+    <form method="post" class="auth-form auth-form-spaced profile-edit-form">
+        {% csrf_token %}
+        <input type="hidden" name="profile_submit" value="1">
+        {% if profile_form.non_field_errors %}
+            <p class="form-errors">{{ profile_form.non_field_errors }}</p>
+        {% endif %}
+        {{ profile_form.as_p }}
+        <div class="btn-row profile-actions">
+            <button type="submit" class="btn btn-secondary">Сохранить данные</button>
+            <a href="{% url 'pages:booking' %}" class="btn btn-primary">Новая запись</a>
+        </div>
+    </form>
 </section>
 
 <section class="profile-section">
@@ -23,6 +29,7 @@
                         <th>Мастер</th>
                         <th>Услуга</th>
                         <th>Статус</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,6 +40,11 @@
                         <td>{{ item.master.full_name }}</td>
                         <td>{{ item.service.name }}</td>
                         <td>{{ item.get_status_display }}</td>
+                        <td>
+                            {% if item.status != "completed" and item.status != "cancelled" %}
+                                <a href="{% url 'pages:cancel_appointment' item.pk %}" class="btn btn-outline btn-sm">Отменить</a>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -8,7 +8,14 @@ from appointments.models import Appointment
 from masters.models import Master
 from services.models import Service
 
-from .forms import AdminAppointmentForm, AppointmentForm, LoginForm, RegisterForm
+from .forms import (
+    AdminAppointmentForm,
+    AppointmentForm,
+    LoginForm,
+    MasterCommentForm,
+    ProfileUpdateForm,
+    RegisterForm,
+)
 
 
 def staff_required(view_func):
@@ -16,7 +23,7 @@ def staff_required(view_func):
 
 
 def home(request):
-    services = Service.objects.filter(is_active=True)[:3]
+    services = Service.objects.filter(is_active=True)[:4]
     masters = Master.objects.filter(is_active=True)[:3]
     context = {
         "title": "Барбершоп",
@@ -65,9 +72,26 @@ def masters_page(request):
 
 def master_detail(request, pk):
     master = get_object_or_404(Master, pk=pk, is_active=True)
+    comment_form = None
+
+    if request.user.is_authenticated:
+        if request.method == "POST" and "comment_submit" in request.POST:
+            comment_form = MasterCommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.user = request.user
+                comment.master = master
+                comment.save()
+                messages.success(request, "Комментарий добавлен.")
+                return redirect("pages:master_detail", pk=master.pk)
+        else:
+            comment_form = MasterCommentForm()
+
     context = {
         "title": master.full_name,
         "master": master,
+        "comments": master.comments.select_related("user"),
+        "comment_form": comment_form,
     }
     return render(request, "pages/master_detail.html", context)
 
@@ -82,8 +106,7 @@ def contacts_page(request):
     return render(request, "pages/contacts.html", context)
 
 
-def bim_page(request):
-    return render(request, "pages/bim.html")
+
 
 
 def register_view(request):
@@ -137,6 +160,15 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
+    if request.method == "POST" and "profile_submit" in request.POST:
+        profile_form = ProfileUpdateForm(request.POST, instance=request.user)
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Данные профиля обновлены.")
+            return redirect("pages:profile")
+    else:
+        profile_form = ProfileUpdateForm(instance=request.user)
+
     appointments = (
         Appointment.objects.filter(user=request.user)
         .select_related("master", "service")
@@ -145,8 +177,30 @@ def profile_view(request):
     context = {
         "title": "Личный кабинет",
         "appointments": appointments,
+        "profile_form": profile_form,
     }
     return render(request, "pages/profile.html", context)
+
+
+@login_required
+def cancel_appointment(request, pk):
+    appointment = get_object_or_404(Appointment, pk=pk, user=request.user)
+
+    if appointment.status in ("completed", "cancelled"):
+        messages.error(request, "Эту запись нельзя отменить.")
+        return redirect("pages:profile")
+
+    if request.method == "POST":
+        appointment.status = "cancelled"
+        appointment.save()
+        messages.success(request, "Запись отменена.")
+        return redirect("pages:profile")
+
+    return render(
+        request,
+        "pages/cancel_appointment.html",
+        {"title": "Отмена записи", "appointment": appointment},
+    )
 
 
 @login_required
