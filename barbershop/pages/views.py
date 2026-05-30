@@ -82,7 +82,7 @@ def master_detail(request, pk):
                 comment.user = request.user
                 comment.master = master
                 comment.save()
-                messages.success(request, "Комментарий добавлен.")
+                messages.success(request, "Отзыв добавлен.")
                 return redirect("pages:master_detail", pk=master.pk)
         else:
             comment_form = MasterCommentForm()
@@ -250,7 +250,7 @@ def comment_edit(request, pk):
         form = MasterCommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save()
-            messages.success(request, "Комментарий обновлён.")
+            messages.success(request, "Отзыв обновлён.")
             return redirect("pages:master_detail", pk=comment.master.pk)
     else:
         form = MasterCommentForm(instance=comment)
@@ -258,7 +258,7 @@ def comment_edit(request, pk):
     return render(
         request,
         "pages/comment_edit.html",
-        {"title": "Редактирование комментария", "form": form, "comment": comment},
+        {"title": "Редактирование отзыва", "form": form, "comment": comment},
     )
 
 
@@ -269,11 +269,11 @@ def comment_delete(request, pk):
     if request.method == "POST":
         master_pk = comment.master.pk
         comment.delete()
-        messages.success(request, "Комментарий удалён.")
+        messages.success(request, "Отзыв удалён.")
         return redirect("pages:master_detail", pk=master_pk)
 
     return render(
         request,
         "pages/comment_delete.html",
-        {"title": "Удаление комментария", "comment": comment},
+        {"title": "Удаление отзыва", "comment": comment},
     )

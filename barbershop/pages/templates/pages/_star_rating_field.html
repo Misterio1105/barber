@@ -1,0 +1,9 @@
+<div class="rating-field">
+    <label>{{ field.label }}</label>
+    <div class="star-rating-picker">
+        {{ field }}
+        {% for i in "12345" %}
+            <button type="button" class="star-pick" data-value="{{ forloop.counter }}" aria-label="{{ forloop.counter }} из 5">☆</button>
+        {% endfor %}
+    </div>
+</div>

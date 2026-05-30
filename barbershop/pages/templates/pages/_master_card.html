@@ -5,6 +5,6 @@
     <div class="card-body">
         <h3>{{ master.full_name }}</h3>
         <p>{{ master.specialization }}</p>
-        <p class="card-meta">Стаж {{ master.experience }} лет · ★ {{ master.rating }}</p>
+        <p class="card-meta">Стаж {{ master.experience }} лет · ★ {{ master.rating|floatformat:1 }}</p>
     </div>
 </a>

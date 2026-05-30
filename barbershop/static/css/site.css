@@ -518,6 +518,49 @@ p {
     gap: 8px;
 }
 
+.comment-stars {
+    margin: 0 0 8px;
+    color: #e6c27a;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.rating-field {
+    margin-bottom: 18px;
+}
+
+.rating-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #f1d398;
+}
+
+.star-rating-picker {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.star-rating-picker input[type="hidden"] {
+    display: none;
+}
+
+.star-pick {
+    background: none;
+    border: none;
+    font-size: 2.2rem;
+    color: #3d3830;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.12s ease, transform 0.12s ease, text-shadow 0.12s ease;
+}
+
+.star-pick.is-active {
+    color: #ffdf70;
+    text-shadow: 0 0 8px rgba(255, 220, 100, 0.95), 0 0 18px rgba(255, 200, 60, 0.55);
+}
+
 .profile-edit-form {
     max-width: 420px;
 }

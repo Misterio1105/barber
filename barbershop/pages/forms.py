@@ -182,14 +182,17 @@ class AppointmentForm(forms.ModelForm):
 class MasterCommentForm(forms.ModelForm):
     class Meta:
         model = MasterComment
-        fields = ("text",)
-        labels = {"text": "Комментарий"}
+        fields = ("rating", "text")
+        labels = {"rating": "Оценка", "text": "Отзыв"}
         widgets = {
+            "rating": forms.HiddenInput(),
             "text": forms.Textarea(
-                attrs={"class": "form-control", "rows": 3, "placeholder": "Ваш комментарий"}
+                attrs={"class": "form-control", "rows": 3, "placeholder": "Ваш отзыв"}
             ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         _strip_help_text(self)
+        if not self.instance.pk:
+            self.fields["rating"].initial = 5

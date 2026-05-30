@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 user=user,
                 master=master,
                 text=text,
-                defaults={"created_at": timezone.now()},
+                defaults={"rating": 4 + index % 2, "created_at": timezone.now()},
             )
             if was_created:
                 created_at = timezone.make_aware(

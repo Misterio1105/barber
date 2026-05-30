@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load barber_extras %}
+{% load barber_extras static %}
 
 {% block content %}
 <section class="master-detail">
@@ -9,7 +9,7 @@
         <div class="master-detail-info">
             <h2>{{ master.full_name }}</h2>
             <p class="master-spec">{{ master.specialization }}</p>
-            <p>Стаж: {{ master.experience }} лет · Рейтинг: ★ {{ master.rating }}</p>
+            <p>Стаж: {{ master.experience }} лет · Рейтинг: ★ {{ master.rating|floatformat:1 }}</p>
             <p>{{ master.bio }}</p>
             <div class="btn-row profile-actions">
                 {% if user.is_authenticated %}
@@ -50,16 +50,26 @@
 </section>
 
 <section class="section-block">
-    <h3>Комментарии</h3>
+    <h3>Отзывы</h3>
     {% if comment_form %}
         <form method="post" class="auth-form auth-form-spaced comment-form">
             {% csrf_token %}
             <input type="hidden" name="comment_submit" value="1">
-            {{ comment_form.as_p }}
-            <button type="submit" class="btn btn-secondary">Оставить комментарий</button>
+            {% include "pages/_star_rating_field.html" with field=comment_form.rating %}
+            <p>
+                <label for="id_text">Отзыв</label>
+                {{ comment_form.text }}
+            </p>
+            {% if comment_form.text.errors %}
+                <p class="form-errors">{{ comment_form.text.errors }}</p>
+            {% endif %}
+            {% if comment_form.rating.errors %}
+                <p class="form-errors">{{ comment_form.rating.errors }}</p>
+            {% endif %}
+            <button type="submit" class="btn btn-secondary">Оставить отзыв</button>
         </form>
     {% else %}
-        <p><a href="{% url 'pages:login' %}?next={{ request.path|urlencode }}">Войдите</a>, чтобы оставить комментарий.</p>
+        <p><a href="{% url 'pages:login' %}?next={{ request.path|urlencode }}">Войдите</a>, чтобы оставить отзыв.</p>
     {% endif %}
 
     {% if comments %}
@@ -70,6 +80,7 @@
                         <strong>{{ comment.user.username }}</strong>
                         · {{ comment.created_at|date:"d.m.Y H:i" }}
                     </p>
+                    <p class="comment-stars">{{ comment.stars_display }}</p>
                     <p>{{ comment.text }}</p>
                     {% if user.is_staff %}
                         <div class="btn-row comment-actions">
@@ -81,7 +92,11 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>Пока нет комментариев.</p>
+        <p>Пока нет отзывов.</p>
     {% endif %}
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/star-rating.js' %}"></script>
 {% endblock %}

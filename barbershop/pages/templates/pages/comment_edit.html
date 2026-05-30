@@ -1,19 +1,28 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <section class="form-section form-section-spaced">
-    <h2>Редактирование комментария</h2>
+    <h2>Редактирование отзыва</h2>
     <p class="booking-hint">
         {{ comment.user.username }} · {{ comment.master.full_name }} ·
         {{ comment.created_at|date:"d.m.Y H:i" }}
     </p>
     <form method="post" class="auth-form auth-form-spaced">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% include "pages/_star_rating_field.html" with field=form.rating %}
+        <p>
+            <label for="id_text">Отзыв</label>
+            {{ form.text }}
+        </p>
         <div class="btn-row profile-actions">
             <button type="submit" class="btn btn-primary">Сохранить</button>
             <a href="{% url 'pages:master_detail' comment.master.pk %}" class="btn btn-outline">Отмена</a>
         </div>
     </form>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/star-rating.js' %}"></script>
 {% endblock %}
